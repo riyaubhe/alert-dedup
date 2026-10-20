@@ -57,3 +57,18 @@ def test_topic_not_repeated():
 
 def test_empty_input():
     assert dedupe([]) == []
+
+def test_similar_titles_are_duplicates():
+    alerts = [
+        {"title": "Flooding hits city", "url": "https://site1.com/a", "topic": "Weather"},
+        {"title": "Flooding hits the city", "url": "https://site2.com/b", "topic": "Disasters"},
+    ]
+    assert len(dedupe(alerts)) == 1
+
+
+def test_different_meaning_titles_stay_separate():
+    alerts = [
+        {"title": "City council approves budget", "url": "https://site1.com/a", "topic": "Politics"},
+        {"title": "City council rejects budget", "url": "https://site2.com/b", "topic": "Politics"},
+    ]
+    assert len(dedupe(alerts)) == 2

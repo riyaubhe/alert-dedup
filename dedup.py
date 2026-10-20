@@ -1,6 +1,7 @@
 import csv
 import string
 import sys
+from difflib import SequenceMatcher
 from urllib.parse import urlparse, parse_qsl, urlencode
 
 
@@ -29,6 +30,17 @@ def clean_title(title):
     return " ".join(title.split())
 
 
+def is_similar(a, b, threshold=0.9):
+    return SequenceMatcher(None, a, b).ratio() >= threshold
+
+
+def find_similar(title_key, unique):
+    for i, story in enumerate(unique):
+        if is_similar(title_key, clean_title(story["title"])):
+            return i
+    return None
+
+
 def dedupe(alerts):
     unique = []
     seen = {}  # cleaned url or title -> index in unique
@@ -39,6 +51,9 @@ def dedupe(alerts):
         topic = alert["topic"].strip()
 
         index = seen.get(url_key, seen.get(title_key))
+
+        if index is None:
+            index = find_similar(title_key, unique)
 
         if index is None:
             unique.append({
