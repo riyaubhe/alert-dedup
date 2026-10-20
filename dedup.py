@@ -8,8 +8,8 @@ def clean_url(url):
     parts = urlparse(url.strip())
 
     site = parts.netloc.lower()
-    #if site.startswith("www."):
-       # site = site[4:]
+    if site.startswith("www."):
+        site = site[4:]
 
     path = parts.path.rstrip("/")
 
